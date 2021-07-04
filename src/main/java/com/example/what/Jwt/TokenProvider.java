@@ -1,6 +1,6 @@
 package com.example.what.Jwt;
 
-import com.example.what.Dto.TokenDTO;
+import com.example.what.Dto.TokenResponseDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class TokenProvider implements InitializingBean {
-//    private static String secretKey = "HEYWHATAREYOUSAYINGANDHELLOWORLD";
-//    private static long tokenValidTime = 1000 * 60 * 60 * 24L; // 유효시간 하루
 
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
@@ -44,11 +42,6 @@ public class TokenProvider implements InitializingBean {
         this.refreshTokenValidInMilliSeconds = refreshTokenValidInMilliSeconds * 1000;
     }
 
-//    @PostConstruct
-//    protected static void init(){
-//        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-//    }
-
     @Override
     public void afterPropertiesSet(){
         byte[] keyBytes = Decoders.BASE64.decode(secret);
@@ -56,7 +49,7 @@ public class TokenProvider implements InitializingBean {
     } // 빈이 생성되고 의존성 주입까지 끝낸 이후에 주입받은 secret 값을
     // BASE64 decode 하여 key 변수에 할당하기 위함
 
-    public TokenDTO createToken(Authentication authentication){
+    public TokenResponseDTO createToken(Authentication authentication){
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -77,7 +70,7 @@ public class TokenProvider implements InitializingBean {
                 .setExpiration(refreshTokenExpiresIn)
                 .compact();
 
-        return TokenDTO.builder()
+        return TokenResponseDTO.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
@@ -117,23 +110,5 @@ public class TokenProvider implements InitializingBean {
             logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
-
-//        try{
-//            Claims claims = Jwts.parser()
-//                    .setSigningKey(secretKey.getBytes())
-//                    .parseClaimsJws(jwt)
-//                    .getBody();
-//
-//            Date expiration = claims.getExpiration();
-//            Date now = new Date();
-//
-//            if(expiration.after(now)){
-//                return true;
-//            }
-//            return false;
-//        } catch (Exception e){
-//            e.printStackTrace();
-//            return false;
-//        }
     }
 }

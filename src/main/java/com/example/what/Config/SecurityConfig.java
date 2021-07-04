@@ -75,10 +75,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/hello").permitAll()
                 .antMatchers("/api/authenticate").permitAll()
                 .antMatchers("/api/signup").permitAll()
-                .antMatchers("/api/login").permitAll()// 토큰 없어도 호출 가
+                .antMatchers("/api/login").permitAll()
+                .antMatchers("/api/reissue").permitAll()// 토큰 없어도 호출 가
                 .anyRequest().authenticated()
-//                .antMatchers("/admin/**").hasRole("ROLE_ADMIN")
-//                .antMatchers("/user/**").hasRole("ROLE_MEMBER")
 //                .anyRequest().permitAll() // 나머지 요청은 누구나 접근 가능
 
                 .and()

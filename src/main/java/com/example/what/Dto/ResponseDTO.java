@@ -7,11 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 public class ResponseDTO {
     private String token;
-//    private String tokenType;
 
     @Builder
-    public ResponseDTO(String token) {//} String tokenType) {
+    public ResponseDTO(String token) {
         this.token = token;
-//        this.tokenType = tokenType;
     }
 }

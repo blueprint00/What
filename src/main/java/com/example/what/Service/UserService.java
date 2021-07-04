@@ -1,7 +1,8 @@
 package com.example.what.Service;
 
 import com.example.what.Domain.*;
-import com.example.what.Dto.TokenDTO;
+import com.example.what.Dto.TokenResponseDTO;
+import com.example.what.Dto.TokenRequestDTO;
 import com.example.what.Dto.UserDTO;
 import com.example.what.Jwt.TokenProvider;
 import com.example.what.Util.SecurityUtil;
@@ -50,44 +51,44 @@ public class UserService {
     }
 
     @Transactional
-    public TokenDTO login(UserDTO userDTO){
+    public TokenResponseDTO login(UserDTO userDTO){
         UsernamePasswordAuthenticationToken authenticationToken = userDTO.toAuthentication();
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        TokenDTO tokenDTO = tokenProvider.createToken(authentication);
+        TokenResponseDTO tokenResponseDTO = tokenProvider.createToken(authentication);
 
         Refresh_token refresh_token = Refresh_token.builder()
                 .refresh_key(authentication.getName())
-                .refresh_value(tokenDTO.getRefreshToken())
+                .refresh_value(tokenResponseDTO.getRefreshToken())
                 .build();
 
         refresh_token_repository.save(refresh_token);
 
-        return tokenDTO;
+        return tokenResponseDTO;
     }
 
     @Transactional
-    public TokenDTO reissue(TokenDTO tokenDTO){
-        if(!tokenProvider.validateToken(tokenDTO.getRefreshToken())){
+    public TokenResponseDTO reissue(TokenRequestDTO tokenRequestDTO){
+        if(!tokenProvider.validateToken(tokenRequestDTO.getRefreshToken())){
             throw new RuntimeException("Refresh Token이 유효하지 않습니다.");
         }
 
-        Authentication authentication = tokenProvider.getAuthentication(tokenDTO.getAccessToken());
+        Authentication authentication = tokenProvider.getAuthentication(tokenRequestDTO.getAccessToken());
 
-        Refresh_token refresh_token = refresh_token_repository.findByKey(authentication.getName())
+        Refresh_token refresh_token = refresh_token_repository.findByRefresh_key(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
 
-        if(!refresh_token.getRefresh_value().equals(tokenDTO.getRefreshToken())){
+        if(!refresh_token.getRefresh_value().equals(tokenRequestDTO.getRefreshToken())){
             throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
         }
 
-        TokenDTO newTokenDTO = tokenProvider.createToken(authentication);
+        TokenResponseDTO tokenResponseDTO = tokenProvider.createToken(authentication);
 
-        Refresh_token newRefresh_token = refresh_token.updateValue(newTokenDTO.getRefreshToken());
+        Refresh_token newRefresh_token = refresh_token.updateValue(tokenResponseDTO.getRefreshToken());
         refresh_token_repository.save(newRefresh_token);
 
-        return newTokenDTO;
+        return tokenResponseDTO;
     }
 
 }
