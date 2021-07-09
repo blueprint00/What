@@ -1,9 +1,6 @@
 package com.example.what.Config;
 
-import com.example.what.Jwt.JwtAccessDeniedHandler;
-import com.example.what.Jwt.JwtAuthenticationEntryPoint;
-import com.example.what.Jwt.JwtSecurityConfig;
-import com.example.what.Jwt.TokenProvider;
+import com.example.what.Jwt.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true) // 메소드 단위로 @PreQuthorize 검증 어노테이션을 사용하기 위함
@@ -76,14 +74,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/authenticate").permitAll()
                 .antMatchers("/api/signup").permitAll()
                 .antMatchers("/api/login").permitAll()
-                .antMatchers("/api/reissue").permitAll()// 토큰 없어도 호출 가
+//                .antMatchers("/api/reissue").permitAll()// 토큰 없어도 호출 가
                 .anyRequest().authenticated()
 //                .anyRequest().permitAll() // 나머지 요청은 누구나 접근 가능
 
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));
-//                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider),
-//                        UsernamePasswordAuthenticationFilter.class);
+//                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
         // JwtAuthenticationFilter는
         // UsernamePasswordAuthenticationFilter 전에 넣음
     }

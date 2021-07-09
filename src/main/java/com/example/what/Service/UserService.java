@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,21 +41,22 @@ public class UserService {
         return user_info_repository.save(user_info);
     }
 
-    @Transactional
-    public Optional<User_info> getUserWithAuthorities(String user_id){
-        return user_info_repository.findOneWithAuthoritiesByUser_id(user_id);
-    }
-
-    @Transactional
-    public Optional<User_info> getMyUserWithAuthorities(){
-        return SecurityUtil.getCurrentUserId().flatMap(user_info_repository::findOneWithAuthoritiesByUser_id);
-    }
+//    @Transactional
+//    public Optional<User_info> getUserWithAuthorities(String user_id){
+//        return user_info_repository.findOneWithAuthoritiesByUser_id(user_id);
+//    }
+//
+//    @Transactional
+//    public Optional<User_info> getMyUserWithAuthorities(){
+//        return SecurityUtil.getCurrentUserId().flatMap(user_info_repository::findOneWithAuthoritiesByUser_id);
+//    }
 
     @Transactional
     public TokenResponseDTO login(UserDTO userDTO){
         UsernamePasswordAuthenticationToken authenticationToken = userDTO.toAuthentication();
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         TokenResponseDTO tokenResponseDTO = tokenProvider.createToken(authentication);
 

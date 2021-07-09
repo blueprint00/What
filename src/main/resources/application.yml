@@ -31,6 +31,6 @@ spring:
 #    async:
 #    request-timeout: 5000
 jwt:
-    secret : HEYWHATAREYOUTALKINGABOUTANDFIGHTINGTOGETAJOB
+    secret : SEVZLVdIQVQtQVJFLVlPVS1UQUxLSU5HLUFCT1VULUFORC1GSUdIVElORy1UTy1HRVQtQS1KT0IK #HEY-WHAT-ARE-YOU-TALKING-ABOUT-AND-FIGHTING-TO-GET-A-JOB
     token-validity-in-seconds : 1800
     refresh-token-validity-in-seconds : 86400

@@ -19,11 +19,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api")
-public class WhatController {
+public class UserController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
@@ -45,7 +46,7 @@ public class WhatController {
         TokenResponseDTO tokenResponseDTO = userService.login(userDTO);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + tokenResponseDTO.getAccessToken());
-        return ResponseEntity.ok(tokenResponseDTO);
+        return new ResponseEntity<>(tokenResponseDTO, httpHeaders, HttpStatus.OK);
     }
 
     @PostMapping("/reissue")
@@ -53,23 +54,29 @@ public class WhatController {
         TokenResponseDTO tokenResponseDTO = userService.reissue(tokenRequestDTO);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + tokenResponseDTO.getAccessToken());
-        return ResponseEntity.ok(tokenResponseDTO);
+        return new ResponseEntity<>(tokenResponseDTO, httpHeaders, HttpStatus.OK);
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<TokenResponseDTO> authorize(@Valid @RequestBody UserDTO userDTO) {
+//    @PostMapping("/authenticate")
+//    public ResponseEntity<TokenResponseDTO> authorize(@Valid @RequestBody UserDTO userDTO) {
+//
+//        UsernamePasswordAuthenticationToken authenticationToken =
+//                new UsernamePasswordAuthenticationToken(userDTO.getUser_id(), userDTO.getPassword());
+//
+//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        TokenResponseDTO jwt = tokenProvider.createToken(authentication);
+//
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + jwt.getAccessToken());
+//
+//        return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
+//    }
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userDTO.getUser_id(), userDTO.getPassword());
+//    @GetMapping("/user")
+//    public ResponseEntity<User_info> getMyUserInfo(){
+//        return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
+//    }
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        TokenResponseDTO jwt = tokenProvider.createToken(authentication);
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + jwt.getAccessToken());
-
-        return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
-    }
 }
