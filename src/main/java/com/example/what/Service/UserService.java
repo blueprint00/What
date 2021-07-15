@@ -5,7 +5,6 @@ import com.example.what.Dto.TokenResponseDTO;
 import com.example.what.Dto.TokenRequestDTO;
 import com.example.what.Dto.UserDTO;
 import com.example.what.Jwt.TokenProvider;
-import com.example.what.Util.SecurityUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,16 +14,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class UserService {
     private final User_info_repository user_info_repository;
     private final Refresh_token_repository refresh_token_repository;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
+
+
+    public UserService(User_info_repository user_info_repository, Refresh_token_repository refresh_token_repository, TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, PasswordEncoder passwordEncoder) {
+        this.user_info_repository = user_info_repository;
+        this.refresh_token_repository = refresh_token_repository;
+        this.tokenProvider = tokenProvider;
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional
     public User_info signup(UserDTO userDTO){
@@ -65,6 +71,9 @@ public class UserService {
                 .refresh_value(tokenResponseDTO.getRefreshToken())
                 .build();
 
+        System.out.println("key : " + refresh_token.getRefresh_key());
+        System.out.println("value : " + refresh_token.getRefresh_value());
+
         refresh_token_repository.save(refresh_token);
 
         return tokenResponseDTO;
@@ -93,4 +102,12 @@ public class UserService {
         return tokenResponseDTO;
     }
 
+    @Transactional
+    public void logout(String user_id) {
+        refresh_token_repository.deleteById(user_id);
+    }
+
+    public void deleteUser(String user_id) {
+        user_info_repository.deleteById(user_id);
+    }
 }

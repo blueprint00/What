@@ -7,6 +7,8 @@ import com.example.what.Dto.UserDTO;
 import com.example.what.Jwt.JwtAuthenticationFilter;
 import com.example.what.Jwt.TokenProvider;
 import com.example.what.Service.UserService;
+
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,15 +23,20 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Map;
 
-@AllArgsConstructor
+import static com.example.what.Util.ApiUtil.*;
+
 @RestController
 @RequestMapping("/api")
 public class UserController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private UserService userService;
 
-    @Autowired
-    UserService userService;
+    public UserController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService) {
+        this.tokenProvider = tokenProvider;
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.userService = userService;
+    }
 
     @GetMapping("/hello")
     public ResponseEntity<String> hello(){
@@ -47,14 +54,28 @@ public class UserController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + tokenResponseDTO.getAccessToken());
         return new ResponseEntity<>(tokenResponseDTO, httpHeaders, HttpStatus.OK);
+        // return ResponseEntity.ok(userService.login(userDTO));
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenResponseDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDTO) {
-        TokenResponseDTO tokenResponseDTO = userService.reissue(tokenRequestDTO);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + tokenResponseDTO.getAccessToken());
-        return new ResponseEntity<>(tokenResponseDTO, httpHeaders, HttpStatus.OK);
+    public ApiResult<TokenResponseDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDTO) {
+//        TokenResponseDTO tokenResponseDTO = userService.reissue(tokenRequestDTO);
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + tokenResponseDTO.getAccessToken());
+        return success(userService.reissue(tokenRequestDTO));
+//        return new ResponseEntity<>(tokenResponseDTO, httpHeaders, HttpStatus.OK);
+        // return ResponseEntity.ok(userService.reissue(userDTO));
+
+    }
+
+    @PostMapping("/{user_id}/logout")
+    public void logout(@PathVariable String user_id){
+        userService.logout(user_id);
+    }
+
+    @PostMapping("/{user_id}/delete")
+    public void deleteUser(@PathVariable String user_id){
+        userService.deleteUser(user_id);
     }
 
 //    @PostMapping("/authenticate")

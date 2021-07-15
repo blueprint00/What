@@ -36,6 +36,7 @@ dependencies {
 
     runtimeOnly 'mysql:mysql-connector-java'
 
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 
 }
 
