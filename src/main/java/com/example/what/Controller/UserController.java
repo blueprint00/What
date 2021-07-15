@@ -26,7 +26,7 @@ import java.util.Map;
 import static com.example.what.Util.ApiUtil.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/user")
 public class UserController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -68,14 +68,14 @@ public class UserController {
 
     }
 
-    @PostMapping("/{user_id}/logout")
-    public void logout(@PathVariable String user_id){
-        userService.logout(user_id);
+    @PostMapping("/logout")
+    public void logout(){
+        userService.logout();
     }
 
-    @PostMapping("/{user_id}/delete")
-    public void deleteUser(@PathVariable String user_id){
-        userService.deleteUser(user_id);
+    @PostMapping("/delete")
+    public void deleteUser(){
+        userService.deleteUser();
     }
 
 //    @PostMapping("/authenticate")

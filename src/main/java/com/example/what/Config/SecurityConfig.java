@@ -70,10 +70,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
-                .antMatchers("/api/hello").permitAll()
-                .antMatchers("/api/authenticate").permitAll()
-                .antMatchers("/api/signup").permitAll()
-                .antMatchers("/api/login").permitAll()
+                .antMatchers("/user/hello").permitAll()
+                .antMatchers("/user/authenticate").permitAll()
+                .antMatchers("/user/signup").permitAll()
+                .antMatchers("/user/login").permitAll()
 //                .antMatchers("/api/reissue").permitAll()// 토큰 없어도 호출 가
                 .anyRequest().authenticated()
 //                .anyRequest().permitAll() // 나머지 요청은 누구나 접근 가능

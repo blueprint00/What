@@ -103,11 +103,14 @@ public class UserService {
     }
 
     @Transactional
-    public void logout(String user_id) {
-        refresh_token_repository.deleteById(user_id);
+    public void logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        refresh_token_repository.deleteById(authentication.getName());
     }
 
-    public void deleteUser(String user_id) {
-        user_info_repository.deleteById(user_id);
+    @Transactional
+    public void deleteUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        user_info_repository.deleteById(authentication.getName());
     }
 }
